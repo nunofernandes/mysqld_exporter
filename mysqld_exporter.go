@@ -36,7 +36,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/ini.v1"
 
-	"github.com/prometheus/mysqld_exporter/collector"
+	"github.com/nunofernandes/mysqld_exporter/collector"
 )
 
 var (
@@ -281,6 +281,9 @@ func main() {
 	}
 	handlerFunc := newHandler(collector.NewMetrics(), enabledScrapers, logger)
 	http.Handle(*metricPath, promhttp.InstrumentMetricHandler(prometheus.DefaultRegisterer, handlerFunc))
+	http.HandleFunc("/_/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`ok`))
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write(landingPage)
 	})
